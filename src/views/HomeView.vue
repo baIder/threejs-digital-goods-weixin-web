@@ -13,5 +13,6 @@ import { mockData } from "@/mock/data"
 <style scoped lang="scss">
 .content {
   width: 375px;
+  padding: 12px;
 }
 </style>
