@@ -2,17 +2,39 @@
 import { useMainStore } from '@/stores';
 import { storeToRefs } from 'pinia';
 import { ref, onMounted } from 'vue';
+import * as THREE from 'three'
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { useCreateScene } from '@/utils/createScene'
 import { toggleActive } from '@/utils/toggleActive';
 
 const store = useMainStore()
 const { currentItem: item } = storeToRefs(store)
 const renderTarget = ref<HTMLCanvasElement>()
-let camera: THREE.PerspectiveCamera
+let threeHandlers: {
+    scene: THREE.Scene;
+    camera: THREE.PerspectiveCamera;
+    renderer: THREE.WebGLRenderer;
+    controls: OrbitControls;
+    molGLTF: THREE.Group;
+}
 
+//TODO
 const onClickColor = (e: MouseEvent, path: string) => {
     toggleActive(e)
     console.log(path);
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.load(path, (texture) => {
+        threeHandlers.molGLTF.traverse((node) => {
+            if ((node as THREE.Mesh).isMesh && node.name === item.value?.colorMeshName) {
+                const material = (node as THREE.Mesh).material as THREE.Material;
+                console.log(material);
+
+                // 更新贴图属性
+                material.map = texture;
+                material.needsUpdate = true;
+            }
+        });
+    });
 }
 
 const onClickFeature = (e: MouseEvent, clip: string) => {
@@ -29,11 +51,15 @@ const onClickLook = (e: MouseEvent) => {
 }
 
 const onResetCamera = () => {
-    camera.position.set(item.value!.cameraPos[0], item.value!.cameraPos[1], item.value!.cameraPos[2])
+    threeHandlers.camera.position.set(item.value!.cameraPos[0], item.value!.cameraPos[1], item.value!.cameraPos[2])
 }
 
 onMounted(() => {
-    camera = useCreateScene({ target: renderTarget.value!, item: item.value! }).camera
+    useCreateScene({ target: renderTarget.value!, item: item.value! }).then(res => {
+        threeHandlers = res
+        console.log(threeHandlers);
+
+    })
 })
 </script>
 
