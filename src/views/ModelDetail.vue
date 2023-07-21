@@ -2,57 +2,14 @@
 import { useMainStore } from '@/stores';
 import { storeToRefs } from 'pinia';
 import { ref, onMounted } from 'vue';
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { useCreateScene } from '@/utils/createScene'
 
 const store = useMainStore()
 const { currentItem: item } = storeToRefs(store)
 const renderTarget = ref<HTMLCanvasElement>()
 
 onMounted(() => {
-    const width = renderTarget.value!.clientWidth
-    const height = renderTarget.value!.clientHeight
-
-    const scene = new THREE.Scene();
-
-    const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
-    const [x, y, z] = item.value!.cameraPos
-    camera.position.set(x, y, z);
-    camera.lookAt(0, 0, 0);
-
-    const renderer = new THREE.WebGLRenderer({ canvas: renderTarget.value, antialias: true });
-    renderer.setClearColor("#ffffff", 0);
-    renderer.setSize(width * 2, height * 2, false);
-
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.update();
-
-    const light = new THREE.AmbientLight(0x404040, 10);
-    scene.add(light);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.rotation.set(40, 70, 0)
-    scene.add(directionalLight);
-
-    const renderScene = () => {
-        const animate = () => {
-            requestAnimationFrame(animate);
-            controls.update();
-            renderer.render(scene, camera);
-        };
-        animate();
-    }
-
-    const loader = new GLTFLoader();
-    loader.load(item.value!.model, (gltf) => {
-        const model = gltf.scene;
-        model.position.set(item.value!.position[0], -item.value!.modelHeight / 2, item.value!.position[2])
-        model.rotation.set(item.value!.rotation[0], item.value!.rotation[1], item.value!.rotation[2])
-        model.scale.set(item.value!.scale[0], item.value!.scale[1], item.value!.scale[2])
-        scene.add(model);
-
-        renderScene()
-    });
+    useCreateScene({ target: renderTarget.value!, item: item.value! })
 })
 </script>
 

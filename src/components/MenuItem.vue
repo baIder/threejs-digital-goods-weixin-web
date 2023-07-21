@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { useCreateScene } from '@/utils/createScene'
 
 const props = defineProps<{
     item: MenuItem
@@ -11,48 +9,7 @@ const props = defineProps<{
 const renderTarget = ref<HTMLCanvasElement>()
 
 onMounted(() => {
-    const width = renderTarget.value!.clientWidth
-    const height = renderTarget.value!.clientHeight
-
-    const scene = new THREE.Scene();
-
-    const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
-    const [x, y, z] = props.item.cameraPos
-    camera.position.set(x, y, z);
-    camera.lookAt(0, 0, 0);
-
-    const renderer = new THREE.WebGLRenderer({ canvas: renderTarget.value, antialias: true });
-    renderer.setClearColor("#ffffff", 0);
-    renderer.setSize(width * 2, height * 2, false);
-
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.update();
-
-    const light = new THREE.AmbientLight(0x404040, 10);
-    scene.add(light);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.rotation.set(40, 70, 0)
-    scene.add(directionalLight);
-
-    const renderScene = () => {
-        const animate = () => {
-            requestAnimationFrame(animate);
-            controls.update();
-            renderer.render(scene, camera);
-        };
-        animate();
-    }
-
-    const loader = new GLTFLoader();
-    loader.load(props.item.model, (gltf) => {
-        const model = gltf.scene;
-        model.position.set(props.item.position[0], -props.item.modelHeight / 2, props.item.position[2])
-        model.rotation.set(props.item.rotation[0], props.item.rotation[1], props.item.rotation[2])
-        model.scale.set(props.item.scale[0], props.item.scale[1], props.item.scale[2])
-        scene.add(model);
-
-        renderScene()
-    });
+    useCreateScene({ target: renderTarget.value!, item: props.item })
 })
 </script>
 
