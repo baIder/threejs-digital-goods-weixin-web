@@ -9,6 +9,7 @@ export class CreateScene {
   camera: THREE.PerspectiveCamera;
   renderer: THREE.WebGLRenderer;
   gltf?: GLTF;
+  isPlaying: boolean = false;
 
   constructor(options: { target: HTMLCanvasElement; item: MenuItem }) {
     this.target = options.target;
@@ -74,6 +75,7 @@ export class CreateScene {
 
   playClip(clipName: string) {
     if (!this.gltf) return;
+    if (this.isPlaying) return;
     const model = this.gltf.scene;
     const animations = this.gltf.animations;
     const mixer = new THREE.AnimationMixer(model);
@@ -82,6 +84,10 @@ export class CreateScene {
     action.setLoop(THREE.LoopOnce, 1);
     action.clampWhenFinished = true;
     action.play();
+    mixer.addEventListener("finished", () => {
+      this.isPlaying = false;
+    });
+    this.isPlaying = true;
 
     const clock = new THREE.Clock();
     const animate = () => {
