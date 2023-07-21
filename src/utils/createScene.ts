@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { GLTFLoader, type GLTF } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 export const useCreateScene = (options: {
@@ -11,7 +11,7 @@ export const useCreateScene = (options: {
     camera: THREE.PerspectiveCamera;
     renderer: THREE.WebGLRenderer;
     controls: OrbitControls;
-    molGLTF: THREE.Group;
+    gltf: GLTF;
   }>((resolve) => {
     const { target, item } = options;
     const width = target.clientWidth;
@@ -34,9 +34,9 @@ export const useCreateScene = (options: {
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.update();
 
-    const light = new THREE.AmbientLight(0x404040, 1);
+    const light = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(light);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
     directionalLight.rotation.set(40, 70, 0);
     scene.add(directionalLight);
 
@@ -50,28 +50,23 @@ export const useCreateScene = (options: {
     };
 
     const loader = new GLTFLoader();
-    let molGLTF = {} as THREE.Group;
     loader.load(item.model, (gltf) => {
-      molGLTF = gltf.scene;
-      molGLTF.position.set(
+      const model = gltf.scene;
+      model.position.set(
         item.position[0],
         -item.modelHeight / 2,
         item.position[2]
       );
-      molGLTF.rotation.set(
-        item.rotation[0],
-        item.rotation[1],
-        item.rotation[2]
-      );
-      molGLTF.scale.set(item.scale[0], item.scale[1], item.scale[2]);
-      scene.add(molGLTF);
+      model.rotation.set(item.rotation[0], item.rotation[1], item.rotation[2]);
+      model.scale.set(item.scale[0], item.scale[1], item.scale[2]);
+      scene.add(model);
 
       resolve({
         scene,
         camera,
         renderer,
         controls,
-        molGLTF,
+        gltf,
       });
       renderScene();
     });

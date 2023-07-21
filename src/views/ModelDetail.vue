@@ -6,6 +6,7 @@ import * as THREE from 'three'
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { useCreateScene } from '@/utils/createScene'
 import { toggleActive } from '@/utils/toggleActive';
+import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 const store = useMainStore()
 const { currentItem: item } = storeToRefs(store)
@@ -15,31 +16,45 @@ let threeHandlers: {
     camera: THREE.PerspectiveCamera;
     renderer: THREE.WebGLRenderer;
     controls: OrbitControls;
-    molGLTF: THREE.Group;
+    gltf: GLTF;
 }
 
 //TODO
 const onClickColor = (e: MouseEvent, path: string) => {
     toggleActive(e)
-    console.log(path);
     const textureLoader = new THREE.TextureLoader();
     textureLoader.load(path, (texture) => {
-        threeHandlers.molGLTF.traverse((node) => {
+        threeHandlers.gltf.scene.traverse((node) => {
             if ((node as THREE.Mesh).isMesh && node.name === item.value?.colorMeshName) {
-                const material = (node as THREE.Mesh).material as THREE.Material;
-                console.log(material);
-
-                // 更新贴图属性
-                material.map = texture;
-                material.needsUpdate = true;
+                //@ts-ignore
+                node.material.map = texture;
+                //@ts-ignore
+                node.material.needsUpdate = true;
             }
         });
     });
 }
 
-const onClickFeature = (e: MouseEvent, clip: string) => {
+const onClickFeature = (e: MouseEvent, clipName: string) => {
     toggleActive(e)
-    console.log(clip);
+    const model = threeHandlers.gltf.scene
+    const animations = threeHandlers.gltf.animations
+    const mixer = new THREE.AnimationMixer(model);
+    const clip = animations.filter((i) => i.name = clipName)![0]
+    const action = mixer.clipAction(clip);
+    action.setLoop(THREE.LoopOnce, 1);
+    action.clampWhenFinished = true;
+    action.play();
+
+    const clock = new THREE.Clock();
+    const animate = () => {
+        const delta = clock.getDelta();
+        mixer.update(delta);
+        threeHandlers.renderer.render(threeHandlers.scene, threeHandlers.camera);
+        requestAnimationFrame(animate);
+    };
+
+    animate();
 }
 
 const onClickPop = (e: MouseEvent) => {
