@@ -32,7 +32,7 @@ const onResetCamera = () => {
 }
 
 onMounted(() => {
-    useCreateScene({ target: renderTarget.value!, item: item.value! })
+    const { camera } = useCreateScene({ target: renderTarget.value!, item: item.value! })
 })
 </script>
 

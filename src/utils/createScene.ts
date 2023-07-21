@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { GLTFLoader, type GLTF } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 export const useCreateScene = (options: {
@@ -43,7 +43,9 @@ export const useCreateScene = (options: {
   };
 
   const loader = new GLTFLoader();
+  let molGLTF = {} as GLTF;
   loader.load(item.model, (gltf) => {
+    molGLTF = gltf;
     const model = gltf.scene;
     model.position.set(
       item.position[0],
@@ -56,4 +58,11 @@ export const useCreateScene = (options: {
 
     renderScene();
   });
+  return {
+    scene,
+    camera,
+    renderer,
+    controls,
+    molGLTF,
+  };
 };
