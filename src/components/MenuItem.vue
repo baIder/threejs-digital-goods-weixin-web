@@ -22,7 +22,7 @@ onMounted(() => {
     camera.lookAt(0, 0, 0);
 
     const renderer = new THREE.WebGLRenderer({ canvas: renderTarget.value, antialias: true });
-    renderer.setClearColor("#121521");
+    renderer.setClearColor("#ffffff", 0);
     renderer.setSize(width * 2, height * 2, false);
 
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -46,7 +46,8 @@ onMounted(() => {
     const loader = new GLTFLoader();
     loader.load(props.item.model, (gltf) => {
         const model = gltf.scene;
-        model.position.set(0, -props.item.modelHeight / 2, 0)
+        model.position.set(props.item.position[0], -props.item.modelHeight / 2, props.item.position[2])
+        model.rotation.set(props.item.rotation[0], props.item.rotation[1], props.item.rotation[2])
         model.scale.set(props.item.scale[0], props.item.scale[1], props.item.scale[2])
         scene.add(model);
 
