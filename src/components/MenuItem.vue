@@ -47,6 +47,7 @@ onMounted(() => {
     loader.load(props.item.model, (gltf) => {
         const model = gltf.scene;
         model.position.set(0, -props.item.modelHeight / 2, 0)
+        model.scale.set(props.item.scale[0], props.item.scale[1], props.item.scale[2])
         scene.add(model);
 
         renderScene()

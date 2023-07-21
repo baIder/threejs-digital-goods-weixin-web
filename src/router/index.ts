@@ -9,6 +9,11 @@ const router = createRouter({
       name: "home",
       component: HomeView,
     },
+    {
+      path: "/detail",
+      name: "detail",
+      component: () => import("@/views/ModelDetail.vue"),
+    },
   ],
 });
 

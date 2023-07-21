@@ -1,9 +1,10 @@
-@import './base.scss';
+@import "./base.scss";
 
-#app{
-    width: 100vw;
-    height: 100vh;
-    background:#121521;
-    display: flex;
-    justify-content: center;
+#app {
+  width: 100vw;
+  height: 100vh;
+  background: #121521;
+  display: flex;
+  justify-content: center;
+  overflow-y: auto;
 }
