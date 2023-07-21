@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const props = defineProps<{
     item: MenuItem
@@ -10,36 +11,46 @@ const props = defineProps<{
 const renderTarget = ref<HTMLCanvasElement>()
 
 onMounted(() => {
+    const width = renderTarget.value!.clientWidth
+    const height = renderTarget.value!.clientHeight
 
     const scene = new THREE.Scene();
 
-    // 创建相机
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 5;
+    const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
+    const [x, y, z] = props.item.cameraPos
+    camera.position.set(x, y, z);
+    camera.lookAt(0, 0, 0);
 
-    // 创建渲染器
-    const renderer = new THREE.WebGLRenderer({ canvas: renderTarget.value });
+    const renderer = new THREE.WebGLRenderer({ canvas: renderTarget.value, antialias: true });
+    renderer.setClearColor("#121521");
+    renderer.setSize(width * 2, height * 2, false);
 
-    const light = new THREE.AmbientLight(0x404040, 2); // 柔和的白光
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.update();
+
+    const light = new THREE.AmbientLight(0x404040, 10);
     scene.add(light);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.rotation.set(40, 70, 0)
+    scene.add(directionalLight);
+
+    const renderScene = () => {
+        const animate = () => {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        };
+        animate();
+    }
 
     const loader = new GLTFLoader();
     loader.load(props.item.model, (gltf) => {
         const model = gltf.scene;
+        model.position.set(0, -props.item.modelHeight / 2, 0)
         scene.add(model);
 
-        // 渲染循环
-        const animate = () => {
-            requestAnimationFrame(animate);
-
-            // 这里可以添加模型的动画或其他操作
-
-            renderer.render(scene, camera);
-        };
-
-        animate();
+        renderScene()
     });
-
 })
 </script>
 
