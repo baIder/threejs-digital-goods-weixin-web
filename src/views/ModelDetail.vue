@@ -8,6 +8,7 @@ import { toggleActive } from '@/utils/toggleActive';
 const store = useMainStore()
 const { currentItem: item } = storeToRefs(store)
 const renderTarget = ref<HTMLCanvasElement>()
+let camera: THREE.PerspectiveCamera
 
 const onClickColor = (e: MouseEvent, path: string) => {
     toggleActive(e)
@@ -28,11 +29,11 @@ const onClickLook = (e: MouseEvent) => {
 }
 
 const onResetCamera = () => {
-    console.log('onResetCamera');
+    camera.position.set(item.value!.cameraPos[0], item.value!.cameraPos[1], item.value!.cameraPos[2])
 }
 
 onMounted(() => {
-    const { camera } = useCreateScene({ target: renderTarget.value!, item: item.value! })
+    camera = useCreateScene({ target: renderTarget.value!, item: item.value! }).camera
 })
 </script>
 
