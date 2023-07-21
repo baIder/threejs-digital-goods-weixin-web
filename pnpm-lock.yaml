@@ -40,6 +40,9 @@ devDependencies:
   npm-run-all:
     specifier: ^4.1.5
     version: 4.1.5
+  postcss-px-to-viewport-8-plugin:
+    specifier: ^1.2.2
+    version: 1.2.2
   typescript:
     specifier: ~5.0.4
     version: 5.0.4
@@ -1043,6 +1046,11 @@ packages:
       string.prototype.padend: 3.1.4
     dev: true
 
+  /object-assign@4.1.1:
+    resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
+    engines: {node: '>=0.10.0'}
+    dev: true
+
   /object-inspect@1.12.3:
     resolution: {integrity: sha512-geUvdk7c+eizMNUDkRpW1wJwgfOiOeHbxBR/hLXK1aT6zmVSO0jsQcs7fj6MGw89jC/cjGfLcNOrtMYtGqm81g==}
     dev: true
@@ -1121,6 +1129,12 @@ packages:
       vue: 3.3.4
       vue-demi: 0.14.5(vue@3.3.4)
     dev: false
+
+  /postcss-px-to-viewport-8-plugin@1.2.2:
+    resolution: {integrity: sha512-ej1qFciV9jHFCAFf1/R4F7Fh34MjFoFqtr4kW02NZkCayzMRPzmPx/3Mf5f6fhXvZ9NEqULrHREce1rRAUwwLw==}
+    dependencies:
+      object-assign: 4.1.1
+    dev: true
 
   /postcss@8.4.26:
     resolution: {integrity: sha512-jrXHFF8iTloAenySjM/ob3gSj7pCu0Ji49hnjqzsgSRa50hkWCKD0HQ+gMNJkW38jBI68MpAAg7ZWwHwX8NMMw==}
