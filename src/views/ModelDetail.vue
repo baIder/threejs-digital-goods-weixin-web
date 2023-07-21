@@ -2,59 +2,22 @@
 import { useMainStore } from '@/stores';
 import { storeToRefs } from 'pinia';
 import { ref, onMounted } from 'vue';
-import * as THREE from 'three'
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { useCreateScene } from '@/utils/createScene'
+import { CreateScene } from '@/utils/createScene'
 import { toggleActive } from '@/utils/toggleActive';
-import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 const store = useMainStore()
 const { currentItem: item } = storeToRefs(store)
 const renderTarget = ref<HTMLCanvasElement>()
-let threeHandlers: {
-    scene: THREE.Scene;
-    camera: THREE.PerspectiveCamera;
-    renderer: THREE.WebGLRenderer;
-    controls: OrbitControls;
-    gltf: GLTF;
-}
+let threeHandlers: CreateScene
 
-//TODO
 const onClickColor = (e: MouseEvent, path: string) => {
     toggleActive(e)
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.load(path, (texture) => {
-        threeHandlers.gltf.scene.traverse((node) => {
-            if ((node as THREE.Mesh).isMesh && node.name === item.value?.colorMeshName) {
-                //@ts-ignore
-                node.material.map = texture;
-                //@ts-ignore
-                node.material.needsUpdate = true;
-            }
-        });
-    });
+    threeHandlers.changeColor(path)
 }
 
 const onClickFeature = (e: MouseEvent, clipName: string) => {
     toggleActive(e)
-    const model = threeHandlers.gltf.scene
-    const animations = threeHandlers.gltf.animations
-    const mixer = new THREE.AnimationMixer(model);
-    const clip = animations.filter((i) => i.name = clipName)![0]
-    const action = mixer.clipAction(clip);
-    action.setLoop(THREE.LoopOnce, 1);
-    action.clampWhenFinished = true;
-    action.play();
-
-    const clock = new THREE.Clock();
-    const animate = () => {
-        const delta = clock.getDelta();
-        mixer.update(delta);
-        threeHandlers.renderer.render(threeHandlers.scene, threeHandlers.camera);
-        requestAnimationFrame(animate);
-    };
-
-    animate();
+    threeHandlers.playClip(clipName)
 }
 
 const onClickPop = (e: MouseEvent) => {
@@ -66,15 +29,11 @@ const onClickLook = (e: MouseEvent) => {
 }
 
 const onResetCamera = () => {
-    threeHandlers.camera.position.set(item.value!.cameraPos[0], item.value!.cameraPos[1], item.value!.cameraPos[2])
+    threeHandlers.resetCamera()
 }
 
 onMounted(() => {
-    useCreateScene({ target: renderTarget.value!, item: item.value! }).then(res => {
-        threeHandlers = res
-        console.log(threeHandlers);
-
-    })
+    threeHandlers = new CreateScene({ target: renderTarget.value!, item: item.value! })
 })
 </script>
 
