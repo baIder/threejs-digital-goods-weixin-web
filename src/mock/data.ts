@@ -10,19 +10,19 @@ export const mockData: MenuItem[] = [
         text: "红色",
         value: "#a33d39",
         id: "red",
-        src: "/assets/01red.png",
+        src: "@/assets/01red.png",
       },
       {
         text: "蓝色",
         value: "#395b96",
         id: "bbbb",
-        src: "/assets/01blue.png",
+        src: "@/assets/01blue.png",
       },
       {
         text: "绿色",
         value: "#559775",
         id: "black",
-        src: "/assets/01green.png",
+        src: "@/assets/01green.png",
       },
     ],
     pop: {

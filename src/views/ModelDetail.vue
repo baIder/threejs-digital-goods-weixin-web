@@ -3,10 +3,33 @@ import { useMainStore } from '@/stores';
 import { storeToRefs } from 'pinia';
 import { ref, onMounted } from 'vue';
 import { useCreateScene } from '@/utils/createScene'
+import { toggleActive } from '@/utils/toggleActive';
 
 const store = useMainStore()
 const { currentItem: item } = storeToRefs(store)
 const renderTarget = ref<HTMLCanvasElement>()
+
+const onClickColor = (e: MouseEvent, path: string) => {
+    toggleActive(e)
+    console.log(path);
+}
+
+const onClickFeature = (e: MouseEvent, clip: string) => {
+    toggleActive(e)
+    console.log(clip);
+}
+
+const onClickPop = (e: MouseEvent) => {
+    toggleActive(e)
+}
+
+const onClickLook = (e: MouseEvent) => {
+    toggleActive(e)
+}
+
+const onResetCamera = () => {
+    console.log('onResetCamera');
+}
 
 onMounted(() => {
     useCreateScene({ target: renderTarget.value!, item: item.value! })
@@ -22,17 +45,20 @@ onMounted(() => {
         <section class="modelContainer">
             <canvas ref="renderTarget" />
             <div class="colors">
-                <div class="color" :class="idx === 0 ? 'active' : ''" v-for="(i, idx) in item?.color" :key="i.id">
+                <div class="color" :class="idx === 0 ? 'active' : ''" v-for="(i, idx) in item?.color" :key="i.id"
+                    @click="onClickColor($event, i.src)">
                     <span :style="{ backgroundColor: i.value }" />
                     {{ i.text }}
                 </div>
             </div>
             <div class="features">
-                <div class="feature active">外观</div>
-                <div class="feature" v-for="i in item?.features" :key="i.clipName">{{ i.name }}</div>
-                <div class="feature">其他热点</div>
+                <div class="feature active" @click="onClickLook">外观</div>
+                <div class="feature" v-for="i in item?.features" :key="i.clipName"
+                    @click="onClickFeature($event, i.clipName)">{{ i.name }}
+                </div>
+                <div class="feature" @click="onClickPop">其他热点</div>
             </div>
-            <div class="reset">
+            <div class="reset" @click="onResetCamera">
                 <img src="@/assets/reset.png" alt="">
                 <span>复位</span>
             </div>
