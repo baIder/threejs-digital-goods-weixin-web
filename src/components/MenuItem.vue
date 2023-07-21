@@ -1,13 +1,52 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue';
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
 const props = defineProps<{
     item: MenuItem
 }>()
+
+const renderTarget = ref<HTMLCanvasElement>()
+
+onMounted(() => {
+
+    const scene = new THREE.Scene();
+
+    // 创建相机
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 5;
+
+    // 创建渲染器
+    const renderer = new THREE.WebGLRenderer({ canvas: renderTarget.value });
+
+    const light = new THREE.AmbientLight(0x404040, 2); // 柔和的白光
+    scene.add(light);
+
+    const loader = new GLTFLoader();
+    loader.load(props.item.model, (gltf) => {
+        const model = gltf.scene;
+        scene.add(model);
+
+        // 渲染循环
+        const animate = () => {
+            requestAnimationFrame(animate);
+
+            // 这里可以添加模型的动画或其他操作
+
+            renderer.render(scene, camera);
+        };
+
+        animate();
+    });
+
+})
 </script>
 
 <template>
     <div class="menu-item">
         <div class="menu-item__media">
-
+            <canvas ref="renderTarget"></canvas>
         </div>
         <div class="menu-item__desc">
             <span class="name">{{ item.name }}</span>
@@ -31,6 +70,11 @@ const props = defineProps<{
         width: 100%;
         height: 230px;
         margin-bottom: 20px;
+
+        >canvas {
+            width: 100%;
+            height: 100%;
+        }
     }
 
     >.menu-item__desc {
