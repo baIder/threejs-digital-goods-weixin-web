@@ -2,22 +2,22 @@
 import { useMainStore } from '@/stores';
 import { storeToRefs } from 'pinia';
 import { ref, onMounted } from 'vue';
-import { CreateScene } from '@/utils/createScene'
+import { ThreeScene } from '@/utils/createScene'
 import { toggleActive } from '@/utils/toggleActive';
 
 const store = useMainStore()
 const { currentItem: item } = storeToRefs(store)
 const renderTarget = ref<HTMLCanvasElement>()
-let threeHandlers: CreateScene
+let three: ThreeScene
 
 const onClickColor = (e: MouseEvent, path: string) => {
     toggleActive(e)
-    threeHandlers.changeColor(path)
+    three.changeColor(path)
 }
 
 const onClickFeature = (e: MouseEvent, clipName: string) => {
     toggleActive(e)
-    threeHandlers.playClip(clipName)
+    three.playClip(clipName)
 }
 
 const onClickPop = (e: MouseEvent) => {
@@ -29,11 +29,11 @@ const onClickLook = (e: MouseEvent) => {
 }
 
 const onResetCamera = () => {
-    threeHandlers.resetCamera()
+    three.resetCamera()
 }
 
 onMounted(() => {
-    threeHandlers = new CreateScene({ target: renderTarget.value!, item: item.value! })
+    three = new ThreeScene({ target: renderTarget.value!, item: item.value! })
 })
 </script>
 

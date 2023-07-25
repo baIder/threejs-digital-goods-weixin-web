@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader, type GLTF } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-export class CreateScene {
+export class ThreeScene {
   target: HTMLCanvasElement;
   item: MenuItem;
   scene: THREE.Scene = new THREE.Scene();

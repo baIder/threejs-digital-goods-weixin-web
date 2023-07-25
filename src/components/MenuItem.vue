@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { CreateScene } from '@/utils/createScene'
+import { ThreeScene } from '@/utils/createScene'
 
 const props = defineProps<{
     item: MenuItem
@@ -9,7 +9,7 @@ const props = defineProps<{
 const renderTarget = ref<HTMLCanvasElement>()
 
 onMounted(() => {
-    new CreateScene({ target: renderTarget.value!, item: props.item })
+    new ThreeScene({ target: renderTarget.value!, item: props.item })
 })
 </script>
 
